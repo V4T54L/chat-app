@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useState } from "react";
 import { SocketProvider } from "./contexts/SocketContext";
 import ChatPage from "./components/ChatPage";
-import Authentication from "./components/Auth/Authentication";
+import LandingPage from "./components/AuthNew/LandingPage";
 
 interface UsernameRequiredProps {
   username: string;
@@ -22,8 +22,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/" element={<LandingPage setUsername={setUsername} />} /> */}
-        <Route path="/" element={<Authentication  />} />
+        <Route path="/" element={<LandingPage  />} />
         <Route path="/chat" element={
           <RequireUsername username={username}>
             {
