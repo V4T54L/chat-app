@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useState } from "react";
 import { SocketProvider } from "./contexts/SocketContext";
-import ChatPage from "./components/ChatPage";
+import ChatPage from "./components/Chat/ChatPage";
 import LandingPage from "./components/AuthNew/LandingPage";
 
 interface UsernameRequiredProps {
@@ -23,15 +23,16 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage  />} />
-        <Route path="/chat" element={
+        <Route path="/chat" element={<ChatPage  />} />
+        {/* <Route path="/chat" element={
           <RequireUsername username={username}>
             {
-              username && username.length>0 && <SocketProvider>
+              username && username.length > 0 && <SocketProvider>
                 <ChatPage username={username} />
               </SocketProvider>
             }
           </RequireUsername>
-        } />
+        } /> */}
       </Routes>
     </BrowserRouter>
   );

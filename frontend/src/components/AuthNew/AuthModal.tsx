@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { Eye } from 'lucide-react'; // Importing icons from lucide-react
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
   email?: string;
@@ -19,12 +20,15 @@ const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen,
     watch, // Include watch here
   } = useForm<FormData>();
 
+  const navigate = useNavigate()
+
   const toggleForm = () => {
     setIsLogin(!isLogin);
   };
 
   const onSubmit = (data: FormData) => {
     console.log(data);
+    navigate("/chat")
     // Handle authentication here
   };
 
