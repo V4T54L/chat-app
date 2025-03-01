@@ -1,8 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useState } from "react";
-import { SocketProvider } from "./contexts/SocketContext";
-import ChatPage from "./components/Chat/ChatPage";
+// import { SocketProvider } from "./contexts/SocketContext";
 import LandingPage from "./components/AuthNew/LandingPage";
+import ChatPage from "./components/Chat/ChatPage";
 
 interface UsernameRequiredProps {
   username: string;
