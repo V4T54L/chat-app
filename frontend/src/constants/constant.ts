@@ -1,4 +1,4 @@
-export const SERVER_URL: string = 'ws://localhost:8080/ws';
+export const SERVER_URL: string = 'ws://192.168.1.6:8080/ws';
 // const PING_INTERVAL_MS: number = 5000;
 // const MESSAGE_TYPE_BROADCAST: string = 'broadcast';
 // const MESSAGE_RECEIVED_TYPE_BROADCAST: string = 'broadcastResponse';

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 
@@ -10,6 +10,9 @@ interface ConversationListProps {
 const ConversationList: React.FC<ConversationListProps> = ({ activeConversation, setActiveConversation }) => {
     const MAX_LENGTH = 20
     const chats = useSelector((state: RootState) => state.chats.chats)
+    useEffect(() => {
+        console.log("Chats : ", chats)
+    }, [chats])
 
 
     return (
@@ -20,6 +23,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ activeConversation,
                 const isActive = activeConversation === conversation.id;
                 const content = conversation.lastMessage?.content + ""
                 const truncatedContent = content.length > MAX_LENGTH ? content.substring(0, MAX_LENGTH) + '...' : content;
+
 
                 return (
                     <button

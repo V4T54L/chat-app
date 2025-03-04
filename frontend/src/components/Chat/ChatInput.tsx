@@ -1,11 +1,11 @@
 import React from 'react';
 import { Send, Paperclip, Smile } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
-import { useSocket } from '../../contexts/SocketContext';
 import { SEND_MESSAGE_REQUEST } from '../../constants/constant';
 import { AddMessageAction } from '../../constants/types';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { useSocket } from '../../contexts/useSocket';
 
 interface ChatInputProps {
     conversationId: string;
@@ -39,6 +39,7 @@ export default function ChatInput({ conversationId }: ChatInputProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        console.log(`Sending message to ${conversationId} : ${message}`)
         if (message.trim()) {
             sendMessage(conversationId, message.trim());
             setMessage('');

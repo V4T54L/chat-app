@@ -15,7 +15,7 @@ type UserInfo struct {
 type MessageData struct {
 	ID        string `json:"id,omitempty"`
 	Content   string `json:"content,omitempty"`
-	SenderID  string `json:"sender_id,omitempty"`
+	SenderID  string `json:"senderId,omitempty"`
 	Timestamp string `json:"timestamp,omitempty"`
 	Status    string `json:"status,omitempty"`
 }

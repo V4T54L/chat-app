@@ -3,14 +3,14 @@ import { Conversation, User } from '../../components/Chat/types';
 import { AddMessageAction } from '../../constants/types';
 
 interface ChatState {
-    chats: Map<string, Conversation>;
+    chats: Conversation[];
     user: User;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: ChatState = {
-    chats: new Map<string, Conversation>(),
+    chats: [],
     user: {
         avatar: "", id: "", name: "", status: "away",
     },
@@ -23,20 +23,24 @@ const chatSlice = createSlice({
     initialState,
     reducers: {
         addMessageToConversation(state, action: PayloadAction<AddMessageAction>) {
-            if (!state.chats.has(action.payload.chatId)) {
+            const chat = state.chats.find(e => e.id === action.payload.chatId)
+            if (!chat) {
+                console.log(`[-] Conversation ${action.payload.chatId} not found to add message (${action.payload.message}).`,)
                 return
             }
-            const messages = state.chats.get(action.payload.chatId)?.messages
-            messages!.push(action.payload.message)
+            chat.messages.push(action.payload.message)
         },
 
         addConversation(state, action: PayloadAction<Conversation>) {
-            if (!state.chats.has(action.payload.id)) {
-                state.chats.set(action.payload.id, action.payload)
+            const chat = state.chats.find(e => e.id === action.payload.id)
+            if (chat) {
+                console.log(`Conversation ${chat.id} already exists.`,)
+                return
             }
+            state.chats.push(action.payload)
         },
 
-        setChats(state, action: PayloadAction<Map<string, Conversation>>) {
+        setChats(state, action: PayloadAction<Conversation[]>) {
             state.chats = action.payload;
         },
 

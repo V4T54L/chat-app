@@ -12,7 +12,7 @@ interface MainChatAreaProps {
 const MainChatArea: React.FC<MainChatAreaProps> = ({ conversationId }) => {
     const chats = useSelector((state: RootState) => state.chats.chats)
     const currentUser = useSelector((state: RootState) => state.chats.user)
-    const currentChat = chats.get(conversationId)
+    const currentChat = chats.find(e => e.id === conversationId)
     const currentConversation = currentChat
     const messages = currentChat?.messages
 
@@ -49,10 +49,13 @@ const MainChatArea: React.FC<MainChatAreaProps> = ({ conversationId }) => {
 
                 {
                     messages?.map((msg) => {
-                        const isUser = msg.senderId === currentUser.id
+                        const isUser = msg.senderId === currentUser.name
                         const user = isUser && currentConversation ? currentUser : currentConversation!.participants[0]
+                        console.log("\n\n\n Messages : ", messages)
+                        console.log("CurrentUser : ", currentUser)
+                        console.log("Other : ", user)
                         return <ChatBubble key={msg.id} isUser={isUser} message={msg.content}
-                            senderAvatar={user.avatar} senderName={(msg.senderId === user.id) ? "You" : "Ditto"}
+                            senderAvatar={user.avatar} senderName={isUser ? "You" : user.name}
                             status={msg.status} time={msg.timestamp} />
                     })
                 }

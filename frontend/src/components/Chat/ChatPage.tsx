@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { LogOut, Settings, UserIcon } from 'lucide-react'
 import ConversationList from './ConversationList'
 import MainChatArea from './MainChatArea'
-import { useSocket } from '../../contexts/SocketContext'
 import { ACTIVE_USERS, NEW_CONN_BROADCAST, NEW_CONN_JOINED, SEND_MESSAGE_RESPONSE, USER_INFO } from '../../constants/constant'
 import { User, Conversation } from "./types"
 import { useDispatch, useSelector } from 'react-redux'
 import { addConversation, addMessageToConversation, setChats, setUser } from '../../redux/slices/chatSlice'
 import { AddMessageAction } from '../../constants/types'
 import { RootState } from '../../redux/store'
+import { useSocket } from '../../contexts/useSocket'
 
 const ChatPage: React.FC = () => {
     const [activeConversation, setActiveConversation] = useState("")
@@ -19,11 +19,14 @@ const ChatPage: React.FC = () => {
 
     useEffect(() => {
         if (!socket) {
+            console.log("Socket unavailable")
             return
         }
 
+        console.log("Socket available!")
+
         const handleActiveChatsEvent = (data: User[]) => {
-            const chats: Map<string, Conversation> = new Map();
+            const chats: Conversation[] = []
 
             data.forEach(e => {
                 const conversation: Conversation = {
@@ -33,7 +36,7 @@ const ChatPage: React.FC = () => {
                     messages: [],
                     unreadCount: 0,
                 };
-                chats.set(conversation.id, conversation); // Use the conversation id as the key
+                chats.push(conversation);
             });
             dispatch(setChats(chats))
         }
@@ -54,6 +57,8 @@ const ChatPage: React.FC = () => {
         }
 
         const handleSetUserInfo = (user: User) => {
+            console.log("Setting user : ", user)
+            user.id = user.name
             dispatch(setUser(user))
         }
 
@@ -61,16 +66,25 @@ const ChatPage: React.FC = () => {
         socket.on(NEW_CONN_BROADCAST, handleNewConnectionBroadcast)
         socket.on(SEND_MESSAGE_RESPONSE, handleMessageReceived)
         socket.on(USER_INFO, handleSetUserInfo)
+        console.log("Added 'Active users', 'New Conn', 'Send Msg', 'UserInfo' receivers");
 
-        socket.send(NEW_CONN_JOINED, {})
+        setTimeout(() => {
+            console.log("Sending new connection joined event");
+            socket.send(NEW_CONN_JOINED, {});
+        }, 1000);
 
         return () => {
             socket.off(USER_INFO, handleSetUserInfo)
             socket.off(SEND_MESSAGE_RESPONSE, handleMessageReceived)
             socket.off(NEW_CONN_BROADCAST, handleNewConnectionBroadcast)
             socket.off(ACTIVE_USERS, handleActiveChatsEvent)
+            console.log("Removed 'Active users', 'New Conn', 'Send Msg', 'UserInfo' receivers");
         }
-    }, [socket, dispatch])
+    }, [socket])
+
+    useEffect(() => {
+        console.log("User : ", user)
+    }, [user])
 
     return (
         <div data-theme="dark">

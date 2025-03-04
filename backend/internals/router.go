@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -44,20 +43,11 @@ func NewRouter(connectionManager *ConnectionManager) http.Handler {
 }
 
 func (rm *Router) handleWebSocket(w http.ResponseWriter, r *http.Request) {
-	// check for auth token in header
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, "Authorization header required", http.StatusUnauthorized)
-		return
-	}
+	log.Println("\n\n [+] Websocket endpoint hit")
 
-	tokenParts := strings.Split(authHeader, "Bearer ")
-	if len(tokenParts) != 2 {
-		http.Error(w, "Invalid authorization header format", http.StatusUnauthorized)
-		return
-	}
+	queryParams := r.URL.Query()
+	token := queryParams.Get("token")
 
-	token := tokenParts[1]
 	log.Println("[+] Token : ", token)
 
 	// validte token
@@ -81,6 +71,7 @@ func (rm *Router) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println("\n\n [+] Successfully upgraded ws connection")
 	_ = rm.connectionManager.AddConnection(conn, token)
 }
 
