@@ -43,21 +43,15 @@ func NewRouter(connectionManager *ConnectionManager) http.Handler {
 }
 
 func (rm *Router) handleWebSocket(w http.ResponseWriter, r *http.Request) {
-	log.Println("\n\n [+] Websocket endpoint hit")
-
 	queryParams := r.URL.Query()
 	token := queryParams.Get("token")
 
-	log.Println("[+] Token : ", token)
-
 	// validte token
-	user, ok := rm.store.loggedInUsers[token]
+	_, ok := rm.store.loggedInUsers[token]
 	if !ok {
 		http.Error(w, "Invalid token", http.StatusUnauthorized)
 		return
 	}
-
-	log.Println("[+] User : ", user)
 
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {

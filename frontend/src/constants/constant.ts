@@ -1,4 +1,5 @@
-export const SERVER_URL: string = 'ws://192.168.1.6:8080/ws';
+export const SERVER_API_URL: string = import.meta.env.VITE_API_BASE_URL;
+export const SERVER_WS_URL: string = import.meta.env.VITE_WS_BASE_URL;
 // const PING_INTERVAL_MS: number = 5000;
 // const MESSAGE_TYPE_BROADCAST: string = 'broadcast';
 // const MESSAGE_RECEIVED_TYPE_BROADCAST: string = 'broadcastResponse';

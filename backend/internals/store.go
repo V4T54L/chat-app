@@ -2,7 +2,6 @@ package internals
 
 import (
 	"errors"
-	"log"
 	"math/rand"
 
 	"github.com/google/uuid"
@@ -33,8 +32,6 @@ func (u *UserStore) VerifyCreds(username, password string) (*UserInfo, error) {
 	}
 	// add user to logged in user
 	u.loggedInUsers[user.ID] = user
-	log.Println("\n\n\n\n\n\n [+] User added : ", user.Username)
-	log.Println("\n\n [+] Users : ", u.loggedInUsers)
 
 	// return the user
 	return &user, nil
