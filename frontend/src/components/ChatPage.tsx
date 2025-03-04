@@ -3,6 +3,7 @@ import { useSocket } from '../contexts/SocketContext';
 import { sendMessage } from '../utils/socketUtils';
 import { BroadcastMessage } from '../constants/types';
 import { MESSAGE_RECEIVED_TYPE_BROADCAST } from '../constants/constant';
+import { useDispatch } from 'react-redux';
 // import styles from './ChatPage.module.css';
 
 interface ChatMessage {
@@ -19,6 +20,7 @@ const ChatPage: React.FC<Props> = ({ username }) => {
     const socket = useSocket()
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [newMessage, setNewMessage] = useState('');
+    const dispatch = useDispatch()
 
     console.log("Chat Page Loaded")
 

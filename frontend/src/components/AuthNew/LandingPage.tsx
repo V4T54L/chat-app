@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { MessageSquare, UserPlus, Lock, PhoneCall } from 'lucide-react';
 import AuthModal from './AuthModal';
 
+
 const LandingPage: React.FC = () => {
     const [isModalOpen, setModalOpen] = useState(false);
 

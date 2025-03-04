@@ -1,10 +1,12 @@
 package main
 
 import (
+	"backend/internals"
 	"log"
 	"net/http"
 
 	gosocketify "github.com/V4T54L/go-socketify"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -14,6 +16,15 @@ func main() {
 
 	// Initialize the router
 	router := gosocketify.NewRouter(connectionManager)
+
+	r, ok := router.(*mux.Router)
+	if !ok {
+		log.Fatal("error adding api to router")
+	}
+
+	handler := internals.NewHandler()
+	r.HandleFunc("/login", handler.HandleLogin).Methods("POST")
+	r.HandleFunc("/health", handler.HandleHealthCheck).Methods("GET")
 
 	// Start the HTTP and socketify server
 	log.Println("Starting server on :8080")
@@ -51,7 +62,6 @@ func (e *eventDispatcher) Dispatch(connId string, message gosocketify.Message) {
 	case "ping":
 		message.Event = "pong"
 		e.Send(connId, message)
-
 	default:
 		// Log a message for unhandled event types.
 		log.Printf("Event not handled: %s", message.Event)

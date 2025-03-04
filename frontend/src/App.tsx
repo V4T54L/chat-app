@@ -1,38 +1,33 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { useState } from "react";
-// import { SocketProvider } from "./contexts/SocketContext";
 import LandingPage from "./components/AuthNew/LandingPage";
 import ChatPage from "./components/Chat/ChatPage";
+import { SocketProvider } from "./contexts/SocketContext";
 
 interface UsernameRequiredProps {
-  username: string;
+  // username: string;
   children: React.ReactNode;
 }
 
-const RequireUsername = ({ username, children }: UsernameRequiredProps) => {
-  if (!username || username === "") {
+const RequireToken = ({ children }: UsernameRequiredProps) => {
+  const token = localStorage.getItem('token')
+  if (!token || token === "") {
     return <Navigate to="/" replace />;
   }
   return <>{children}</>;
 };
 
 function App() {
-  const [username, setUsername] = useState<string>("");
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage  />} />
-        <Route path="/chat" element={<ChatPage  />} />
-        {/* <Route path="/chat" element={
-          <RequireUsername username={username}>
-            {
-              username && username.length > 0 && <SocketProvider>
-                <ChatPage username={username} />
-              </SocketProvider>
-            }
-          </RequireUsername>
-        } /> */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/chat" element={
+          <RequireToken>
+            <SocketProvider>
+              <ChatPage />
+            </SocketProvider>
+          </RequireToken>
+        } />
       </Routes>
     </BrowserRouter>
   );

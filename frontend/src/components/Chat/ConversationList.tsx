@@ -1,6 +1,6 @@
 import React from 'react'
-import { mockConversations } from './mock';
-import { formatDate } from './types';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface ConversationListProps {
     activeConversation: string;
@@ -9,10 +9,13 @@ interface ConversationListProps {
 
 const ConversationList: React.FC<ConversationListProps> = ({ activeConversation, setActiveConversation }) => {
     const MAX_LENGTH = 20
+    const chats = useSelector((state: RootState) => state.chats.chats)
+
 
     return (
         <div className="space-y-2">
-            {mockConversations.map((conversation) => {
+            {Array.from(chats.values()).map((chat) => {
+                const conversation = chat;
                 const participant = conversation.participants[0];
                 const isActive = activeConversation === conversation.id;
                 const content = conversation.lastMessage?.content + ""
@@ -46,7 +49,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ activeConversation,
                                 {conversation.lastMessage && (
                                     <span className="text-xs text-gray-500">
                                         {/* {formatDate(conversation.lastMessage.timestamp, 'HH:mm')} */}
-                                        {formatDate(conversation.lastMessage.timestamp)}
+                                        {conversation.lastMessage.timestamp}
                                     </span>
                                 )}
                             </div>

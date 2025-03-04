@@ -10,7 +10,7 @@ export interface Message {
     id: string;
     content: string;
     senderId: string;
-    timestamp: Date;
+    timestamp: string;
     status: 'sent' | 'delivered' | 'read';
     attachments?: Attachment[];
 }

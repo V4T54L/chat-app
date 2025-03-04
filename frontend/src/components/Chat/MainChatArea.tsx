@@ -1,17 +1,20 @@
 import React from 'react'
-import { mockConversations, mockMessages, mockUser } from './mock'
 import ChatBubble from './ChatBubble';
-import { formatDate } from './types';
 import { Menu } from 'lucide-react';
 import ChatInput from './ChatInput';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface MainChatAreaProps {
     conversationId: string;
 }
 
 const MainChatArea: React.FC<MainChatAreaProps> = ({ conversationId }) => {
-    const messages = mockMessages[conversationId]
-    const currentConversation = mockConversations.find(e => e.id === conversationId)
+    const chats = useSelector((state: RootState) => state.chats.chats)
+    const currentUser = useSelector((state: RootState) => state.chats.user)
+    const currentChat = chats.get(conversationId)
+    const currentConversation = currentChat
+    const messages = currentChat?.messages
 
     return (
         <>
@@ -46,16 +49,18 @@ const MainChatArea: React.FC<MainChatAreaProps> = ({ conversationId }) => {
 
                 {
                     messages?.map((msg) => {
-                        return <ChatBubble key={msg.id} isUser={msg.senderId === mockUser.id} message={msg.content}
-                            senderAvatar={mockUser.avatar} senderName={(msg.senderId === mockUser.id) ? "You" : "Ditto"}
-                            status={msg.status} time={formatDate(msg.timestamp)} />
+                        const isUser = msg.senderId === currentUser.id
+                        const user = isUser && currentConversation ? currentUser : currentConversation!.participants[0]
+                        return <ChatBubble key={msg.id} isUser={isUser} message={msg.content}
+                            senderAvatar={user.avatar} senderName={(msg.senderId === user.id) ? "You" : "Ditto"}
+                            status={msg.status} time={msg.timestamp} />
                     })
                 }
             </div >
 
 
             {conversationId && (
-                <div className="p-4 bg-white border-t border-gray-200">
+                <div className="p-4 bg-base-100 border-t border-base-300">
                     <ChatInput conversationId={conversationId} />
                 </div>
             )}

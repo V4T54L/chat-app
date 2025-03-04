@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { Eye } from 'lucide-react'; // Importing icons from lucide-react
 import { useNavigate } from 'react-router-dom';
+import { login, signup } from '../../services/apiService';
 
 interface FormData {
   email?: string;
@@ -26,10 +27,26 @@ const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen,
     setIsLogin(!isLogin);
   };
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     console.log(data);
-    navigate("/chat")
-    // Handle authentication here
+
+    try {
+      if (isLogin) {
+        const token = await login(data.username, data.password)
+        if (token) {
+          localStorage.setItem("token", token)
+          navigate("/chat")
+        }
+      } else {
+        if (!data.email) {
+          console.log("Email not provided")
+          return
+        }
+        await signup(data.email, data.username, data.password)
+      }
+    } catch (error) {
+      console.log("Error submitting the form: ", error)
+    }
   };
 
   return (
@@ -37,9 +54,8 @@ const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen,
       initial={{ opacity: 0 }}
       animate={{ opacity: isOpen ? 1 : 0 }}
       transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 w-full h-full flex items-center justify-center backdrop-blur-sm ${
-        isOpen ? 'visible' : 'invisible'
-      }`}
+      className={`fixed top-0 left-0 w-full h-full flex items-center justify-center backdrop-blur-sm ${isOpen ? 'visible' : 'invisible'
+        }`}
       onClick={onClose}
       role="dialog"
       aria-modal="true"

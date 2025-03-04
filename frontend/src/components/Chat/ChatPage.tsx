@@ -1,14 +1,79 @@
-import React, { useState } from 'react'
-import { mockUser } from './mock'
+import React, { useEffect, useState } from 'react'
 import { LogOut, Settings, UserIcon } from 'lucide-react'
 import ConversationList from './ConversationList'
 import MainChatArea from './MainChatArea'
+import { useSocket } from '../../contexts/SocketContext'
+import { ACTIVE_USERS, NEW_CONN_BROADCAST, NEW_CONN_JOINED, SEND_MESSAGE_RESPONSE, USER_INFO } from '../../constants/constant'
+import { User, Conversation } from "./types"
+import { useDispatch, useSelector } from 'react-redux'
+import { addConversation, addMessageToConversation, setChats, setUser } from '../../redux/slices/chatSlice'
+import { AddMessageAction } from '../../constants/types'
+import { RootState } from '../../redux/store'
 
 const ChatPage: React.FC = () => {
     const [activeConversation, setActiveConversation] = useState("")
+    const socket = useSocket()
+    const user = useSelector((state: RootState) => state.chats.user)
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (!socket) {
+            return
+        }
+
+        const handleActiveChatsEvent = (data: User[]) => {
+            const chats: Map<string, Conversation> = new Map();
+
+            data.forEach(e => {
+                const conversation: Conversation = {
+                    id: e.name,
+                    participants: [e],
+                    type: "direct",
+                    messages: [],
+                    unreadCount: 0,
+                };
+                chats.set(conversation.id, conversation); // Use the conversation id as the key
+            });
+            dispatch(setChats(chats))
+        }
+
+        const handleNewConnectionBroadcast = (user: User) => {
+            const conversation: Conversation = {
+                id: user.name,
+                participants: [user],
+                type: "direct",
+                messages: [],
+                unreadCount: 0,
+            };
+            dispatch(addConversation(conversation))
+        }
+
+        const handleMessageReceived = (action: AddMessageAction) => {
+            dispatch(addMessageToConversation(action))
+        }
+
+        const handleSetUserInfo = (user: User) => {
+            dispatch(setUser(user))
+        }
+
+        socket.on(ACTIVE_USERS, handleActiveChatsEvent)
+        socket.on(NEW_CONN_BROADCAST, handleNewConnectionBroadcast)
+        socket.on(SEND_MESSAGE_RESPONSE, handleMessageReceived)
+        socket.on(USER_INFO, handleSetUserInfo)
+
+        socket.send(NEW_CONN_JOINED, {})
+
+        return () => {
+            socket.off(USER_INFO, handleSetUserInfo)
+            socket.off(SEND_MESSAGE_RESPONSE, handleMessageReceived)
+            socket.off(NEW_CONN_BROADCAST, handleNewConnectionBroadcast)
+            socket.off(ACTIVE_USERS, handleActiveChatsEvent)
+        }
+    }, [socket, dispatch])
 
     return (
-        <div data-theme="cupcake">
+        <div data-theme="dark">
             <div className="drawer lg:drawer-open">
                 <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
                 <div className="drawer-content flex flex-col items-center justify-center">
@@ -28,7 +93,7 @@ const ChatPage: React.FC = () => {
                             <div className="dropdown">
                                 <div tabIndex={0} className="avatar" role="button">
                                     <div className="w-10 rounded-full cursor-pointer">
-                                        <img src={mockUser?.avatar} alt={mockUser?.name} />
+                                        <img src={user?.avatar} alt={user?.name} />
                                     </div>
                                 </div>
                                 <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
@@ -47,7 +112,7 @@ const ChatPage: React.FC = () => {
                                     </div></li>
                                 </ul>
                             </div>
-                            <h2 className="font-semibold">{mockUser?.name}</h2>
+                            <h2 className="font-semibold">{user?.name}</h2>
                         </div>
 
                         <label className="input input-bordered flex items-center gap-2 my-4">
